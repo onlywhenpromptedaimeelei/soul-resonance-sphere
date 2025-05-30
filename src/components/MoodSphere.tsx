@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { GlyphOverlay } from './GlyphOverlay';
 
 interface MoodSphereProps {
   hsl: { h: number; s: number; l: number };
@@ -79,6 +80,9 @@ export const MoodSphere = ({ hsl, isListening, className }: MoodSphereProps) => 
             />
           </div>
         )}
+
+        {/* Glyph Overlay */}
+        <GlyphOverlay hsl={hsl} />
       </div>
 
       {/* Sacred geometry overlay */}

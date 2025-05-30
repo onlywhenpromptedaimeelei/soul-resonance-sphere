@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { VoiceInterface } from '@/components/VoiceInterface';
 import { MoodSphere } from '@/components/MoodSphere';
 import { MoodTimeline } from '@/components/MoodTimeline';
+import { SemanticMoodInflow } from '@/components/SemanticMoodInflow';
 import { OnboardingFlow } from '@/components/OnboardingFlow';
 
 const Index = () => {
@@ -49,8 +50,8 @@ const Index = () => {
         </header>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <div className="relative mb-12">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 space-y-8">
+          <div className="relative mb-8">
             <MoodSphere 
               hsl={currentMood} 
               isListening={isListening}
@@ -65,12 +66,18 @@ const Index = () => {
           />
 
           {transcript && (
-            <div className="mt-8 max-w-md text-center">
+            <div className="max-w-md text-center">
               <p className="text-white/70 text-sm italic leading-relaxed">
                 "{transcript}"
               </p>
             </div>
           )}
+
+          {/* Semantic Input */}
+          <SemanticMoodInflow
+            onMoodUpdate={handleMoodUpdate}
+            className="mt-8"
+          />
         </div>
 
         {/* Timeline */}
