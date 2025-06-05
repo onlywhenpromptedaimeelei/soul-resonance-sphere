@@ -82,7 +82,7 @@ export const SoulResonanceTask = ({ className }: SoulResonanceTaskProps) => {
                     glyphs: Object.fromEntries(
                       Object.entries(result.glyphs)
                         .map(([k, v]) => [k, Math.round(v * 100) / 100])
-                        .filter(([_, v]) => v > 0.2)
+                        .filter(([, v]) => v > 0.2)
                     )
                   }, null, 2)}
                 </div>
@@ -114,8 +114,8 @@ export const SoulResonanceTask = ({ className }: SoulResonanceTaskProps) => {
                   <CardContent>
                     <div className="space-y-1">
                       {Object.entries(result.glyphs)
-                        .filter(([_, score]) => score > 0.2)
-                        .sort(([_, a], [__, b]) => b - a)
+                        .filter(([, score]) => score > 0.2)
+                        .sort(([, a], [, b]) => b - a)
                         .slice(0, 5)
                         .map(([glyph, score]) => (
                           <div key={glyph} className="flex justify-between items-center">
