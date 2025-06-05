@@ -66,7 +66,7 @@ export const SoulResonanceTask = ({ className }: SoulResonanceTaskProps) => {
           {result && (
             <div className="space-y-4 mt-6">
               <div className="text-xs text-white/40 font-mono">
-                lovable.dev > codex run soul_resonance_readout
+                lovable.dev &gt; codex run soul_resonance_readout
               </div>
               
               <div className="bg-black/40 rounded-lg p-4 font-mono text-sm">
