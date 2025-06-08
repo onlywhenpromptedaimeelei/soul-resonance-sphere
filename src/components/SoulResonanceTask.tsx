@@ -81,8 +81,8 @@ export const SoulResonanceTask = ({ className }: SoulResonanceTaskProps) => {
                     },
                     glyphs: Object.fromEntries(
                       Object.entries(result.glyphs)
-                        .map(([k, v]) => [k, Math.round(v * 100) / 100])
-                        .filter(([, v]) => v > 0.2)
+                        .map(([k, v]) => [k, Math.round((v as number) * 100) / 100])
+                        .filter(([, v]) => (v as number) > 0.2)
                     )
                   }, null, 2)}
                 </div>
@@ -114,14 +114,14 @@ export const SoulResonanceTask = ({ className }: SoulResonanceTaskProps) => {
                   <CardContent>
                     <div className="space-y-1">
                       {Object.entries(result.glyphs)
-                        .filter(([, score]) => score > 0.2)
-                        .sort(([, a], [, b]) => b - a)
+                        .filter(([, score]) => (score as number) > 0.2)
+                        .sort(([, a], [, b]) => (b as number) - (a as number))
                         .slice(0, 5)
                         .map(([glyph, score]) => (
                           <div key={glyph} className="flex justify-between items-center">
                             <span className="text-lg">{glyph}</span>
                             <span className="text-xs text-white/60">
-                              {Math.round(score * 100)}%
+                              {Math.round((score as number) * 100)}%
                             </span>
                           </div>
                         ))}
