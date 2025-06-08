@@ -4,13 +4,18 @@ import { VoiceInterface } from '@/components/VoiceInterface';
 import { MoodSphere } from '@/components/MoodSphere';
 import { MoodTimeline } from '@/components/MoodTimeline';
 import { SemanticMoodInflow } from '@/components/SemanticMoodInflow';
+import { SoulResonanceTask } from '@/components/SoulResonanceTask';
 import { OnboardingFlow } from '@/components/OnboardingFlow';
+import { PhaseManager } from '@/lib/phaseManager';
+import { ResonanceInterpreter } from '@/lib/resonanceInterpreter';
 
 const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [currentMood, setCurrentMood] = useState({ h: 240, s: 50, l: 50 });
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [phaseManager] = useState(() => new PhaseManager());
+  const [resonanceInterpreter] = useState(() => new ResonanceInterpreter());
   const [moodHistory, setMoodHistory] = useState<Array<{
     timestamp: Date;
     hsl: { h: number; s: number; l: number };
@@ -24,6 +29,27 @@ const Index = () => {
       hsl,
       text
     }]);
+
+    // Process with phase manager if we have text
+    if (text) {
+      const resonanceResult = resonanceInterpreter.runCodexTask(text);
+      
+      // Calculate overall resonance score
+      const resonanceScore = Object.values(resonanceResult.glyphs).reduce((sum, score) => sum + (score as number), 0) / Object.keys(resonanceResult.glyphs).length;
+      
+      // Find dominant glyph
+      const dominantGlyph = Object.entries(resonanceResult.glyphs)
+        .reduce((max, [glyph, score]) => (score as number) > (max.score as number) ? { glyph, score } : max, { glyph: '⟐', score: 0 }).glyph;
+
+      // Update phase state
+      phaseManager.processInteraction(
+        text,
+        resonanceScore,
+        resonanceResult.mood.color,
+        resonanceResult.mood.hsl,
+        dominantGlyph
+      );
+    }
   };
 
   if (showOnboarding) {
@@ -55,6 +81,7 @@ const Index = () => {
             <MoodSphere 
               hsl={currentMood} 
               isListening={isListening}
+              phaseManager={phaseManager}
               className="w-80 h-80"
             />
           </div>
@@ -78,6 +105,9 @@ const Index = () => {
             onMoodUpdate={handleMoodUpdate}
             className="mt-8"
           />
+
+          {/* Soul Resonance Task */}
+          <SoulResonanceTask className="mt-8 max-w-2xl w-full" />
         </div>
 
         {/* Timeline */}
