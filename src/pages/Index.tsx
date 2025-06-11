@@ -8,6 +8,7 @@ import { SoulResonanceTask } from '@/components/SoulResonanceTask';
 import { OnboardingFlow } from '@/components/OnboardingFlow';
 import { PhaseManager } from '@/lib/phaseManager';
 import { ResonanceInterpreter } from '@/lib/resonanceInterpreter';
+import { EnhancedResonanceInterpreter } from '@/lib/enhancedResonanceInterpreter';
 
 const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(true);
@@ -16,40 +17,66 @@ const Index = () => {
   const [transcript, setTranscript] = useState('');
   const [phaseManager] = useState(() => new PhaseManager());
   const [resonanceInterpreter] = useState(() => new ResonanceInterpreter());
+  const [enhancedInterpreter] = useState(() => new EnhancedResonanceInterpreter());
   const [moodHistory, setMoodHistory] = useState<Array<{
     timestamp: Date;
     hsl: { h: number; s: number; l: number };
     text?: string;
+    enhancedAnalysis?: any;
   }>>([]);
 
   const handleMoodUpdate = (hsl: { h: number; s: number; l: number }, text?: string) => {
     setCurrentMood(hsl);
-    setMoodHistory(prev => [...prev, {
-      timestamp: new Date(),
-      hsl,
-      text
-    }]);
-
-    // Process with phase manager if we have text
+    
+    let enhancedAnalysis = null;
+    
+    // Process with enhanced resonance interpreter if we have text
     if (text) {
-      const resonanceResult = resonanceInterpreter.runCodexTask(text);
+      // Run enhanced emotional analysis
+      const emotionalProfile = enhancedInterpreter.analyzeTextEmotionally(text);
+      const legacyFormat = enhancedInterpreter.convertToLegacyFormat(emotionalProfile);
       
-      // Calculate overall resonance score
-      const resonanceScore = Object.values(resonanceResult.glyphs).reduce((sum, score) => sum + (score as number), 0) / Object.keys(resonanceResult.glyphs).length;
+      enhancedAnalysis = {
+        emotionalProfile,
+        legacyFormat
+      };
+
+      // Calculate overall resonance score from enhanced analysis
+      const resonanceScore = legacyFormat.mood.amplitude;
       
-      // Find dominant glyph
-      const dominantGlyph = Object.entries(resonanceResult.glyphs)
+      // Find dominant glyph from enhanced analysis
+      const dominantGlyph = Object.entries(legacyFormat.glyphs)
         .reduce((max, [glyph, score]) => (score as number) > (max.score as number) ? { glyph, score } : max, { glyph: '⟐', score: 0 }).glyph;
 
-      // Update phase state
+      // Update phase state with enhanced data
       phaseManager.processInteraction(
         text,
         resonanceScore,
-        resonanceResult.mood.color,
-        resonanceResult.mood.hsl,
+        legacyFormat.mood.color,
+        legacyFormat.mood.hsl,
         dominantGlyph
       );
+
+      // Use the enhanced color analysis
+      const enhancedColor = legacyFormat.mood.hsl;
+      setCurrentMood(enhancedColor);
+      
+      console.log('Enhanced Emotional Analysis:', {
+        profile: emotionalProfile,
+        dominantCluster: emotionalProfile.dominant_cluster,
+        valence: emotionalProfile.valence,
+        arousal: emotionalProfile.arousal,
+        symbolicMotion: emotionalProfile.symbolic_motion,
+        phaseShift: emotionalProfile.phase_shift
+      });
     }
+
+    setMoodHistory(prev => [...prev, {
+      timestamp: new Date(),
+      hsl,
+      text,
+      enhancedAnalysis
+    }]);
   };
 
   if (showOnboarding) {
@@ -97,6 +124,23 @@ const Index = () => {
               <p className="text-white/70 text-sm italic leading-relaxed">
                 "{transcript}"
               </p>
+            </div>
+          )}
+
+          {/* Enhanced analysis display */}
+          {moodHistory.length > 0 && moodHistory[moodHistory.length - 1].enhancedAnalysis && (
+            <div className="max-w-lg text-center space-y-2">
+              <div className="text-xs text-white/50">Enhanced Emotional Analysis</div>
+              <div className="text-sm text-white/70">
+                {moodHistory[moodHistory.length - 1].enhancedAnalysis.emotionalProfile.explanation}
+              </div>
+              <div className="flex justify-center space-x-4 text-xs text-white/60">
+                <span>Valence: {moodHistory[moodHistory.length - 1].enhancedAnalysis.emotionalProfile.valence}</span>
+                <span>Arousal: {moodHistory[moodHistory.length - 1].enhancedAnalysis.emotionalProfile.arousal}</span>
+                {moodHistory[moodHistory.length - 1].enhancedAnalysis.emotionalProfile.phase_shift && (
+                  <span className="text-yellow-400">Phase Shift Detected</span>
+                )}
+              </div>
             </div>
           )}
 
