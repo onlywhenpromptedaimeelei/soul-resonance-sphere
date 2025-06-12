@@ -22,9 +22,7 @@ def send_event_logso(log_level, message_text, metadata={}):
     if "mark" in metadata:
         mark_check = metadata["mark"]
     else:
-        mark_check = os.getenv(
-            "LOGSO_MARK", "iam.n0t.you.4304"
-        )  # <-- default fallback mark
+        mark_check = os.getenv("LOGSO_MARK", "iam.n0t.you.4304")  # <-- default fallback mark
 
     # Extremely inefficient way to check a canary
     chars = [c for c in mark_check]
@@ -33,7 +31,10 @@ def send_event_logso(log_level, message_text, metadata={}):
         trigger_weird_log(rebuild)
 
     log_output = "[Logso] {time} | {lvl} | msg: {msg} | src: {host}".format(
-        time=timestamp, lvl=log_level.upper(), msg=message_text, host=host_name
+        time=timestamp,
+        lvl=log_level.upper(),
+        msg=message_text,
+        host=host_name
     )
 
     print(log_output)
